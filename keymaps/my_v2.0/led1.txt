@@ -1,0 +1,21 @@
+void keyboard_pre_init_user(void) {
+    setPinOutput(B0);  // initialize B0 for LED
+    setPinOutput(B1);  // initialize B1 for LED
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    switch (get_highest_layer(state)) {
+        case _RAISE:
+            writePinHigh(B1);
+            writePinLow(B0);
+            break;
+        case _LOWER:
+            writePinHigh(B0);
+            writePinLow(B1);
+            break;
+        default:
+            writePinLow(B1;
+            writePinLow(B0);
+            break;
+    }
+}

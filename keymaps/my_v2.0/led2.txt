@@ -1,0 +1,19 @@
+void keyboard_pre_init_user(void) {
+setPinOutput(GP28);
+setPinOutput(GP26);
+}
+layer_state_t layer_state_set_user(layer_state_t state) {
+    if(IS_LAYER_ON_STATE(state, 1)) {
+        writePinHigh(GP28);
+    }
+    else {
+        writePinLow(GP28);
+    }
+    if(IS_LAYER_ON_STATE(state, 2)) {
+        writePinHigh(GP26);
+    }
+    else {
+        writePinLow(GP26);
+    }
+return state;
+}

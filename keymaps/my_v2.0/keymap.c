@@ -35,6 +35,11 @@ enum planck_keycodes {
   KC_LR_CYCLE, // layer cycle
   SET_DEFAULT_LAYER, // layer toggle to LR_0
   MOD_CK,
+  CK_PGDN,
+  CK_DEL,
+  CK_END,
+  CK_CTL_ALT,
+  CK_RSFT
 };
 
 enum tap_dance_steps {
@@ -81,22 +86,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [LR_0] = LAYOUT_planck_mit(
         TD(TD_ESC_CK),  KC_Q,  KC_W,  KC_E,  KC_R,  KC_T,  KC_Y,  KC_U,  KC_I,  KC_O,  TD(TD_P_PSCR),  TD(TD_BSPC_CK),
         TD(TD_TAB),  TD(TD_A),  KC_S,  KC_D,  KC_F,  KC_G,  KC_H,  TD(TD_J_RB),  TD(TD_K_SB),  TD(TD_L_CB),  TD(TD_SCLN),  KC_ENT,
-        KC_LSFT,  KC_Z,  TD(TD_X_CK),  TD(TD_C_CK),  TD(TD_V_CK),  KC_B,  KC_N,  KC_M,  TD(TD_COM_AB),  TD(TD_DOT_DOTS),  TD(TD_SLSH),  TD(TD_DEL),
-        TD(TD_GRV),  TD(TD_MINS_GUI),  TD(TD_EQL_APP),  TD(TD_CTL_ALT),  TT(1),  TD(TD_SPACE_LOCK),  TD(TD_QUOT),  TT(2),  TD(TD_END),  KC_RSFT,  TD(TD_PGDN)
+        KC_LSFT,  KC_Z,  TD(TD_X_CK),  TD(TD_C_CK),  TD(TD_V_CK),  KC_B,  KC_N,  KC_M,  TD(TD_COM_AB),  TD(TD_DOT_DOTS),  TD(TD_SLSH),  KC_DEL,
+        TD(TD_GRV),  TD(TD_MINS_GUI),  TD(TD_EQL_APP),  TD(TD_CTL_ALT),  TT(1),  TD(TD_SPACE_LOCK),  TD(TD_QUOT),  TT(2),  KC_END,  CK_RSFT,  KC_PGDN
     ),
 
     [LR_1] = LAYOUT_planck_mit(
         KC_TRNS,  KC_1,  KC_2,  KC_3,  KC_4,  KC_5,  KC_F1,  KC_F2,  KC_F3,  KC_F4,  KC_F5,  KC_TRNS,
-        KC_TRNS,  KC_6,  KC_7,  KC_8,  KC_9,  KC_0,  KC_F6,  KC_F7,  KC_F8,  KC_F9,  KC_F10,  KC_TRNS,
-        KC_TRNS,  KC_LEFT,  KC_UP,  KC_DOWN,  KC_RGHT,  KC_TRNS,  KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  KC_TRNS,
-        KC_TRNS,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  SET_DEFAULT_LAYER
+        XXXXXXX,  KC_6,  KC_7,  KC_8,  KC_9,  KC_0,  KC_F6,  KC_F7,  KC_F8,  KC_F9,  KC_F10,  KC_TRNS,
+        KC_TRNS,  KC_LEFT,  KC_UP,  KC_DOWN,  KC_RGHT,  KC_TRNS,  KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  KC_INS,
+        SET_DEFAULT_LAYER,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_HOME,  KC_TRNS,  KC_PGUP
     ),
 
     [LR_2] = LAYOUT_planck_mit(
         KC_TRNS,  QK_BOOT,  DB_TOGG,  EE_CLR,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_TRNS,
         XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_MPLY,  KC_MPRV,  KC_MNXT,  XXXXXXX,
-        KC_TRNS,  MS_LEFT,  MS_UP,  MS_DOWN,  MS_RGHT,  MS_BTN1,  MS_BTN2,  MS_BTN3,  XXXXXXX,  KC_BRID,  KC_BRIU,  KC_INS,
-        XXXXXXX,  MS_WHLL,  MS_WHLU,  MS_WHLD,  MS_WHLR,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_TRNS,  SET_DEFAULT_LAYER
+        KC_TRNS,  MS_LEFT,  MS_UP,  MS_DOWN,  MS_RGHT,  MS_BTN1,  MS_BTN2,  MS_BTN3,  XXXXXXX,  KC_BRID,  KC_BRIU,  XXXXXXX,
+        SET_DEFAULT_LAYER,  MS_WHLL,  MS_WHLU,  MS_WHLD,  MS_WHLR,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX
     )
 
 };
@@ -176,7 +181,7 @@ void toggle_capslock_on(void) {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     if (QK_TAP_DANCE <= keycode && keycode <= QK_TAP_DANCE_MAX) {
         return 150; // TD_로 시작하는 모든 Tap Dance 키는 150ms로 설정
-    } else if (KC_LCTL == keycode || KC_RCTL == keycode) { // KC_LSFT == keycode || KC_RSFT == keycode ||
+    } else if (KC_LCTL == keycode || KC_RCTL == keycode) { // KC_LSFT == keycode || CK_RSFT == keycode ||
         return TAPPING_TERM + 100; // 모디키는 TAPPING_TERM + 100ms로 설정
     }
     return TAPPING_TERM; // 나머지 키는 기본값 사용
@@ -203,7 +208,7 @@ void grave_tilde_td_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 void esc_cycle_td_finished(tap_dance_state_t *state, void *user_data) {
-     if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 1) { // LOWER
+     if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 1) { // LOWER
         printf("move prev Layer\n");
         switch (current_layer) {
           case 0:
@@ -230,7 +235,7 @@ void esc_cycle_td_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 void bspc_cycle_td_finished(tap_dance_state_t *state, void *user_data) {
-     if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 1) { // RAISE
+     if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 1) { // RAISE
         printf("move next Layer\n");
         switch (current_layer) {
           case 0:
@@ -397,6 +402,7 @@ void ctrl_alt_td_finished(tap_dance_state_t *state, void *user_data) {
         register_code(KC_LCTL);
     } else if (state->count == 2) {
         register_code(KC_LALT);
+    // } else if ((get_mods() & MOD_MASK_SHIFT) && state->count == 1) {    
     } else if (state->count == 3) {
         register_code(KC_LCTL);
         register_code(KC_LALT);
@@ -407,6 +413,7 @@ void ctrl_alt_td_reset(tap_dance_state_t *state, void *user_data) {
         unregister_code(KC_LCTL);
     } else if (state->count == 2) {
         unregister_code(KC_LALT);
+    // } else if (state->count == 3) {
     } else if (state->count == 3) {
         unregister_code(KC_LCTL);
         unregister_code(KC_LALT);
@@ -428,9 +435,9 @@ void tab_capslock_td_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 void slash_ck_td_finished(tap_dance_state_t *state, void *user_data) {
-    if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 2) { // 파이프
+    if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 2) { // 파이프
         register_code16(KC_PIPE);
-    } else if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 1) { // 백슬래시
+    } else if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 1) { // 백슬래시
         register_code16(KC_BACKSLASH);
     } else if ((get_mods() == MOD_BIT(KC_LSFT)) && state->count == 1) { // 물음표
         register_code16(KC_QUESTION);
@@ -439,9 +446,9 @@ void slash_ck_td_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 void slash_bslash_td_reset(tap_dance_state_t *state, void *user_data) {
-    if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 2) { // 파이프
+    if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 2) { // 파이프
         unregister_code16(KC_PIPE);
-    } else if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 1) { // 백슬래시
+    } else if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 1) { // 백슬래시
         unregister_code16(KC_BACKSLASH);
     } else if ((get_mods() == MOD_BIT(KC_LSFT)) && state->count == 1) { // 물음표
         unregister_code16(KC_QUESTION);
@@ -549,15 +556,15 @@ void dot_td_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 void space_kblock_td_finished(tap_dance_state_t *state, void *user_data) {
-    if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 2) { // 키보드 잠금
+    if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 2) { // 키보드 잠금
         toggle_keyboard_lock_on();
     } else if (state->count == 1) { // 표준 입력
         register_code(KC_SPACE);
     }
 }
 void space_kblock_td_reset(tap_dance_state_t *state, void *user_data) {
-    if ((get_mods() == MOD_BIT(KC_RSFT)) && state->count == 2) { // 키보드 잠금
-        unregister_code(KC_RSFT);
+    if ((get_mods() == MOD_BIT(CK_RSFT)) && state->count == 2) { // 키보드 잠금
+        unregister_code16(CK_RSFT);
     } else if (state->count == 1) { // 표준 입력
         unregister_code(KC_SPACE);
     }
@@ -696,6 +703,103 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+
+        case CK_RSFT:
+            if (record->event.pressed) {
+        // TODO: ck_pressed = true;
+                printf("rsft pressed\n");
+                register_mods(MOD_BIT(CK_RSFT)); 
+                // register_code16(CK_RSFT);
+            } else {  
+                printf("rsft unpressed\n");
+                
+        // TODO: ck_pressed = false;
+        
+                unregister_mods(MOD_BIT(CK_RSFT));
+                // unregister_code16(CK_RSFT);
+            }
+            return false;
+            break;
+
+    //   case CK_DEL:
+    //     if (record->event.pressed) {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("insert pressed\n");
+    //             register_code(KC_INS);
+    //           } else {
+    //             printf("delete pressed\n");
+    //             register_code(KC_DEL);
+    //           }
+    //     } else {              
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("insert unpressed\n");
+    //             unregister_code(KC_INS);
+    //           } else {
+    //             printf("delete unpressed\n");
+    //             unregister_code(KC_DEL);
+    //           }
+    //     }
+    //     return false;
+    //     break;
+
+    //   case CK_PGDN:
+    //     if (record->event.pressed) {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("pgup pressed\n");
+    //             register_code(KC_PGUP);
+    //           } else {
+    //             printf("pgdn pressed\n");
+    //             register_code(KC_PGDN);
+    //           }
+    //     } else {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("pgup unpressed\n");
+    //             register_code(KC_PGDN);
+    //           } else {
+    //             printf("pgdn unpressed\n");
+    //             unregister_code(KC_PGDN);
+    //           }
+    //     }
+    //     return false;
+    //     break;
+    //   case CK_END:
+    //     if (record->event.pressed) {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("home pressed\n");
+    //             register_code(KC_HOME);
+    //           } else {
+    //             printf("end pressed\n");
+    //             register_code(KC_END);}
+    //     } else {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("home unpressed\n");
+    //             register_code(KC_HOME);
+    //           } else {
+    //             printf("end unpressed\n");
+    //             unregister_code(KC_END);}
+    //     }
+    //     return false;
+    //     break;
+    //   case CK_CTL_ALT:
+    //     if (record->event.pressed) {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("lalt pressed\n");
+    //             // register_code(KC_LALT);
+    //           } else {
+    //             printf("lctl pressed\n");
+    //             register_code(KC_LCTL);
+    //           }
+    //     } else {
+    //           if ((get_mods() == MOD_BIT(CK_RSFT)) ) {
+    //             printf("lalt unpressed\n");
+    //             // unregister_code(KC_LALT);
+    //           } else {
+    //             printf("lctl unpressed\n");
+    //             unregister_code(KC_LCTL);
+    //           }
+    //     }
+    //     return false;
+    //     break;
         
       default:
          return true;  // 기본 동작 수행
